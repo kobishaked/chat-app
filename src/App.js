@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import {
   Route,
   BrowserRouter as Router,
-  Switch,
-  Redirect
+  Switch
 } from 'react-router-dom';
 import './App.css';
 // import Home from './Pages/home/Home';
@@ -11,7 +10,6 @@ import Chat from './pages/chat/Chat';
 import Profile from './pages/profile/Profile';
 import Signup from './pages/signup/Signup';
 import Login from './pages/Signin/Signin';
-import firebase from './services/firebase';
 import { toast, ToastContainer } from 'react-toastify'
 
 function App() {
@@ -59,13 +57,17 @@ function App() {
           <Route
             exact
             path="/"
-            component={Login} />} />
-             <Route
+            component={Login} />
+          <Route
             exact
             path="/Signup"
-            component={Signup} />} />
+            component={Signup} />
+          <Route
+            exact
+            path="/chat"
+            component={Chat} />
 
-</Switch>
+        </Switch>
       </Router>
 
       {/* {loading ?

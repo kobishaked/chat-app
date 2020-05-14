@@ -12,6 +12,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import LoginStrings from '../Signin/LoginStrings'
+import firebase from '../../services/firebase'
+import { useHistory } from "react-router-dom";
+
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -34,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp() {
+    const history = useHistory();
     const [userDetails, setUserDetails] = useState({
         email: "",
         password: "",
@@ -46,16 +51,34 @@ export default function SignUp() {
     const classes = useStyles();
 
 
-    function handleChange (e) {
-        setUserDetails({...userDetails, [e.target.name]: e.target.value})
+    function handleChange(e) {
+        setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
     }
-    async function handleSubmit(e){
+    async function handleSubmit(e) {
         e.preventDefault();
-        try{
-
+        try {
+            const authRes = await firebase.auth().createUserWithEmailAndPassword(userDetails.email, userDetails.password)
+            const docRef = await firebase.firestore().collection('users').add({
+                name: userDetails.name,
+                id: authRes.user.uid,
+                email: userDetails.email,
+                password: userDetails.password,
+                URL: '',
+                messages: [{ notificationId: "", number: 0 }]
+            })
+            localStorage.setItem(LoginStrings.ID, authRes.user.uid);
+            localStorage.setItem(LoginStrings.Name, userDetails.name);
+            localStorage.setItem(LoginStrings.Email, userDetails.email);
+            localStorage.setItem(LoginStrings.Password, userDetails.password);
+            localStorage.setItem(LoginStrings.PhotoURL, "");
+            localStorage.setItem(LoginStrings.UPLOAD_CHANGED, 'state_changed');
+            localStorage.setItem(LoginStrings.Description, "");
+            localStorage.setItem(LoginStrings.FirebaseDocumentId, docRef.id);
+            setUserDetails({ ...userDetails, name: "", email: "", password: "" })
+            history.push("/chat");
         }
-        catch{
-            
+        catch (error) {
+            console.error("Error in signup please try again", error)
         }
     }
 
@@ -119,7 +142,7 @@ export default function SignUp() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onSubmit={handleSubmit}
+                        onClick={handleSubmit}
                     >
                         Sign Up
           </Button>

@@ -16,27 +16,6 @@ import LoginStrings from '../Signin/LoginStrings'
 import firebase from '../../services/firebase'
 import { useHistory } from "react-router-dom";
 
-
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        marginTop: theme.spacing(8),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(3),
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-}));
-
 export default function SignUp() {
     const history = useHistory();
     const [userDetails, setUserDetails] = useState({
@@ -57,13 +36,15 @@ export default function SignUp() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const authRes = await firebase.auth().createUserWithEmailAndPassword(userDetails.email, userDetails.password)
+            const authRes = await firebase.auth().createUserWithEmailAndPassword(
+            userDetails.email, userDetails.password)
             const docRef = await firebase.firestore().collection('users').add({
                 name: userDetails.name,
                 id: authRes.user.uid,
                 email: userDetails.email,
                 password: userDetails.password,
                 URL: '',
+                description: '',
                 messages: [{ notificationId: "", number: 0 }]
             })
             localStorage.setItem(LoginStrings.ID, authRes.user.uid);
@@ -162,6 +143,38 @@ export default function SignUp() {
 
 
 
+
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(3),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
+}));
+
+
+
+
+
+/* questions:
+    1.  the onSubmit property in the submit botton didnt work so i switched it to 
+        onClick. why did it not work?
+    2.  
+
+
+*/
 
 
 

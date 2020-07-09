@@ -12,47 +12,74 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { useHistory } from "react-router-dom";
+import LoginStrings from '../Signin/LoginStrings'
+import firebase from '../../services/firebase'
 
 
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        marginTop: theme.spacing(8),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-}));
+
+
 
 export default function SignIn() {
-
+    const history = useHistory();
     const [userDetails, setUserDetails] = useState({
         email: "",
         password: ""
     })
-
-
-    // const [email, setEmail] = useState("");
-    // const [password, setPassword] = useState("");
-
-    const [name, setName] = useState("");
-    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
     const classes = useStyles();
 
-    function handleChange (e) {
-        setUserDetails({...userDetails, [e.target.name]: e.target.value})
+    function handleChange(e) {
+        setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
     }
+
+    useEffect(() => {
+        if (localStorage.getItem(LoginStrings.ID)) {
+            setIsLoading(false)
+            //toast "login succes"
+            history.push("/chat");
+        }
+        else {
+            setIsLoading(false)
+        }
+    }, [])
+
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError({ error: "" })
+        try {
+            const authRes = await firebase.auth().signInWithEmailAndPassword(
+                userDetails.email, userDetails.password)
+                console.log(authRes)
+                console.log(authRes.user)
+                console.log(authRes.user.uid)
+                
+            if (authRes.user) {
+                const docRef = await firebase.firestore().collection('users').where(
+                    'id', '==', authRes.user.uid).get()
+                docRef.forEach(doc => {
+                    const currentdata = doc.data();
+                    localStorage.setItem(LoginStrings.ID, currentdata.id);
+                    localStorage.setItem(LoginStrings.Name, currentdata.name);
+                    localStorage.setItem(LoginStrings.Email, currentdata.email);
+                    localStorage.setItem(LoginStrings.Password, currentdata.password);
+                    localStorage.setItem(LoginStrings.PhotoURL, currentdata.URL);
+                    // localStorage.setItem(LoginStrings.UPLOAD_CHANGED, 'state_changed');
+                    localStorage.setItem(LoginStrings.Description, currentdata.description);
+                    localStorage.setItem(LoginStrings.FirebaseDocumentId, doc.id);
+                    setUserDetails({ ...userDetails, name: "", email: "", password: "" })
+                })
+                history.push("/chat");
+            }
+        }
+        catch (error) {
+            console.error("Error in signin please try again", error)
+        }
+    }
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -99,14 +126,15 @@ export default function SignIn() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        onClick={handleSubmit}
                     >
                         Sign In
           </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="#" variant="body2">
-                            
-              </Link>
+
+                            </Link>
                         </Grid>
                         <Grid item>
                             <Link href="/Signup" variant="body2">
@@ -116,10 +144,34 @@ export default function SignIn() {
                     </Grid>
                 </form>
             </div>
-       
+
         </Container>
     );
 }
+
+
+
+
+
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(1),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
+}));
 
 
 

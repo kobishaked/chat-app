@@ -16,9 +16,9 @@ export default function Chat() {
     const [currnetUserDocumentId, setCurrnetUserDocumentId] = useState(localStorage.getItem(LoginStrings.FirebaseDocumentId))
     const [currnetUserMessages, setCurrnetUserMessages] = useState([])
 
-    const [searchUsers, setSearchUsers] = useState([])  //all the users from the DB
+    // const [searchUsers, setSearchUsers] = useState([])  //all the users from the DB
     const [currentPeerUser, setCurrentPeerUser] = useState(null)
-    // const [displayedContactSwitchedNotification, setDisplayedContactSwitchedNotification] = useState([])
+    const [displayedContactSwitchedNotification, setDisplayedContactSwitchedNotification] = useState([])
     const [notificationMessagesErase, setNotificationMessagesErase] = useState([])
 
     const [isLoading, setIsLoading] = useState(true)
@@ -64,38 +64,47 @@ export default function Chat() {
      * check if there is at least 1 user in the database. if so, get the information
      * of each user into the SearchUsers state array. this array is array of 
      * objects. each object include the data of specific user.
-     * at the end call the renderListUser to render the list on the screen
+     * at the end of the function, call the renderListUser function to render
+     * the list on the screen
      */
     async function getListUser() {
+        let search = []
         const result = await firebase.firestore().collection('users').get();
         if (result.docs.length > 0) {
             let listUsers = []
+            // let search = []
             listUsers = [...result.docs]
-            listUsers.forEach((item, index) => {
-                setSearchUsers([...searchUsers, {
-                    key: index,
+            const name = result.docs[0].data().name
+            const name1 = listUsers[0].data().name
+
+            listUsers.forEach(item => {
+                search.push({
+                    key: item.data().id,
                     documentKey: item.id,
                     id: item.data().id,
                     name: item.data().name,
                     messages: item.data().messages,
                     URL: item.data().URL,
                     description: item.data().description
-                }])
-            })
-            setIsLoading(false)
+            })})
+                
+            // setIsLoading(false)
         }
-        renderListUser()
+        // setSearchUsers([...search
+        // ])
+        renderListUser(search)
     }
 
 /**
  * this function check again if there is at least 1 user in the array that
  * we already initialized in the previews function call. if so, generate the 
  * viewListUser to be the jsx of the view in the screen. each item in the array
- * is a button the inside this button there are an image of the user, the name of
+ * is a button that inside this button there are an image of the user, the name of
  * the specific user and an indicator of the notifications from this user to the current user.
+ * 
  */
-    function renderListUser() {            //render the list of the users (exept the current user)
-        if (searchUsers > 0) {
+    function renderListUser(searchUsers) {            //render the list of the users (exept the current user)
+        if (searchUsers.length > 0) {
             let viewListUser = []
             let classname = ''
             searchUsers.map((item => {
@@ -105,23 +114,24 @@ export default function Chat() {
                         <button
                             id={item.key}
                             className={classname}
-                             {/* 
-                              when we click the button of the user we want the following to happen:
-                              1. the view of the notification will vanish and the data in the DB
-                              will change
-                              2. 
-                            */}
+                            //when we click the button of the user we want the following to happen:
+                            //1. the view of the notification will vanish and the data in the DB
+                            //   will change
+                            //2. the current peer user will hold the user that we click on
+                            //3. the colors of the notification will vanish 
                             onClick={() => {
                                 notificationErase(item.id)
-                                setCurrentPeerUser(item)
+                                setCurrentPeerUser(item) //
                                 document.getElementById(item.key).style.backgroundColor = '#fff'
                                 document.getElementById(item.key).style.color= '#fff'
                             }}
                         >
                             <img
                                 className='viewAvatarItem'
-                                src={item.URL}
+                                src={require('../../images/dog.jpg')} 
+                                //{item.URL}
                                 alt=''
+                                
                             />
                             <div className='viewWrapContentItem'>
                                 <span className='textItem'>
@@ -182,12 +192,23 @@ export default function Chat() {
     }
 
 /**
- * this  function 
+ * this function will called after we click one of the users in the left list,
+ * and the porpuse of this function is to vanish the notificatoins from this user
+ * (if exists).
+ * itemId is the id of the user that we clicked on in the left list (the id that we 
+ * no longer want it to show in the messages array because we want to erase this notification)
+ * the el.notificationIid is the id of each of the idi's in the messages array. 
  */
     function notificationErase (itemId) {
         currnetUserMessages.forEach((el) => {
             if (el.notificationIid.length > 0){
                 if (el.notificationIid != itemId){
+                    //the notificationMessagesErase is an array that hold the 
+                    //updated messages object that should switch in the DB at the
+                    //updateRenderList function.
+                    //the updated messages object should be the same as before just
+                    //without the element that held the data of the user that we
+                    //just clicked on
                     setNotificationMessagesErase([...notificationMessagesErase, {
                         notificationIid: el.notificationIid,
                         number: el.number
@@ -208,17 +229,17 @@ export default function Chat() {
 
 
     return (
-        <div classes='root'>
-            <div className='body'>
+        <div classes='root'>        {/*flex column*/}
+            <div className='body'>  {/*flex row*/}
                 <div className='viewListUser'>
                     <div className='profileviewleftside'>
                         <img
-                            className='profilePicture'
+                            className='ProfilePicture'
                             alt=''
-                            src={currnetUserPhoto}
+                            src={require('../../images/dog.jpg')} 
                             onClick={onProfileClick}
                         />
-                        <button className='Logout' onClick={handleLogout} ></button>
+                        <button className='Logout' onClick={handleLogout} > Logout </button>
                     </div>
                         {displayedContacts}
                 </div>
@@ -229,7 +250,7 @@ export default function Chat() {
     )
 }
 
-
+//currnetUserPhoto
 
 
 
@@ -261,4 +282,8 @@ const useStyles = makeStyles((theme) => ({
 
 
 /* questions:
-1. should i use local variables or all the variables should be states? */
+1. should i use local variables or all the variables should be states?
+2. in the getListUser i get all the users data inti the search local array 
+    and then when i want to copy this array to the state searchUsers, is not 
+    coppied and the searchUsers state stays empty
+*/

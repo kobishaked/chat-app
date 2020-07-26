@@ -3,11 +3,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import LoginStrings from '../Signin/LoginStrings'
 import firebase from '../../services/firebase'
 import { useHistory } from "react-router-dom";
+import Images from '../../projectImages/projectImages'
 
 export default function SignUp() {
     const history = useHistory();
@@ -26,7 +24,7 @@ export default function SignUp() {
     // const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
     // const [name, setName] = useState("");
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null);
     const classes = useStyles();
 
 
@@ -43,7 +41,7 @@ export default function SignUp() {
                 id: authRes.user.uid,
                 email: userDetails.email,
                 password: userDetails.password,
-                URL: '',
+                URL: Images.anknownPerson,
                 description: '',
                 messages: [{ notificationId: "", number: 0 }]
             })
@@ -51,7 +49,7 @@ export default function SignUp() {
             localStorage.setItem(LoginStrings.Name, userDetails.name);
             localStorage.setItem(LoginStrings.Email, userDetails.email);
             localStorage.setItem(LoginStrings.Password, userDetails.password);
-            localStorage.setItem(LoginStrings.PhotoURL, "");
+            localStorage.setItem(LoginStrings.PhotoURL, Images.anknownPerson);
             localStorage.setItem(LoginStrings.UPLOAD_CHANGED, 'state_changed');
             localStorage.setItem(LoginStrings.Description, "");
             localStorage.setItem(LoginStrings.FirebaseDocumentId, docRef.id);

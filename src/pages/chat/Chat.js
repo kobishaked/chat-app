@@ -4,14 +4,13 @@ import { useHistory } from "react-router-dom";
 import firebase from '../../services/firebase'
 import { makeStyles } from '@material-ui/core/styles';
 import './Chat.css';
-import ReactLoading from 'react-loading';
 
 export default function Chat() {
     const history = useHistory();
     const classes = useStyles();
     //consider adding the localstorage function to get all the user data, movie 7, 5:00
-    const [currnetUserName, setCurrnetUserName] = useState(localStorage.getItem(LoginStrings.Name))
-    const [currnetUserId, setCurrnetUserId] = useState(localStorage.getItem(LoginStrings.ID) )
+    // const [currnetUserName, setCurrnetUserName] = useState(localStorage.getItem(LoginStrings.Name))
+    const [currnetUserId, setCurrnetUserId] = useState(localStorage.getItem(LoginStrings.ID))
     const [currnetUserPhoto, setCurrnetUserPhoto] = useState(localStorage.getItem(LoginStrings.PhotoURL))
     const [currnetUserDocumentId, setCurrnetUserDocumentId] = useState(localStorage.getItem(LoginStrings.FirebaseDocumentId))
     const [currnetUserMessages, setCurrnetUserMessages] = useState([])
@@ -21,14 +20,14 @@ export default function Chat() {
     const [displayedContactSwitchedNotification, setDisplayedContactSwitchedNotification] = useState([])
     const [notificationMessagesErase, setNotificationMessagesErase] = useState([])
 
-    const [isLoading, setIsLoading] = useState(true)
-    const [isOpenDialogConfirmLogout, setIsOpenDialogConfirmLogout] = useState(false)
+    // const [isLoading, setIsLoading] = useState(true)
+    // const [isOpenDialogConfirmLogout, setIsOpenDialogConfirmLogout] = useState(false)
     const [displayedContacts, setDisplayedContacts] = useState([])
 
-    const [currentUserEmail, setCurrentUserEmail] = useState(true)
-    const [currnetUserPassword, setcurrnetUserPassword] = useState(true)
+    // const [currentUserEmail, setCurrentUserEmail] = useState(true)
+    // const [currnetUserPassword, setcurrnetUserPassword] = useState(true)
 
-    const [docId, setDocId] = useState()
+    // const [docId, setDocId] = useState()
 
     /**
      * do this when the component render:
@@ -86,8 +85,9 @@ export default function Chat() {
                     messages: item.data().messages,
                     URL: item.data().URL,
                     description: item.data().description
-            })})
-                
+                })
+            })
+
             // setIsLoading(false)
         }
         // setSearchUsers([...search
@@ -95,14 +95,14 @@ export default function Chat() {
         renderListUser(search)
     }
 
-/**
- * this function check again if there is at least 1 user in the array that
- * we already initialized in the previews function call. if so, generate the 
- * viewListUser to be the jsx of the view in the screen. each item in the array
- * is a button that inside this button there are an image of the user, the name of
- * the specific user and an indicator of the notifications from this user to the current user.
- * 
- */
+    /**
+     * this function check again if there is at least 1 user in the array that
+     * we already initialized in the previews function call. if so, generate the 
+     * viewListUser to be the jsx of the view in the screen. each item in the array
+     * is a button that inside this button there are an image of the user, the name of
+     * the specific user and an indicator of the notifications from this user to the current user.
+     * 
+     */
     function renderListUser(searchUsers) {            //render the list of the users (exept the current user)
         if (searchUsers.length > 0) {
             let viewListUser = []
@@ -123,47 +123,48 @@ export default function Chat() {
                                 notificationErase(item.id)
                                 setCurrentPeerUser(item) //
                                 document.getElementById(item.key).style.backgroundColor = '#fff'
-                                document.getElementById(item.key).style.color= '#fff'
+                                document.getElementById(item.key).style.color = '#fff'
                             }}
                         >
                             <img
                                 className='viewAvatarItem'
-                                src={require('../../images/dog.jpg')} 
+                                src={item.URL}
                                 //{item.URL}
                                 alt=''
-                                
+                                onClick={onProfileClick}
+
                             />
                             <div className='viewWrapContentItem'>
                                 <span className='textItem'>
                                     {`Name: ${item.name}`}
-                             
+
 
                                 </span>
-                                   {/* 
+                                {/* 
                                    next lines will displayed only if the current user get 
                                    notifications from the specific user (we check this in the 
                                     getClassnameforUserandNotification function)
                                 */}
                             </div>
-                            {classname === 'viewWrapItemNotificaion'?
-                            <div classname = 'notificationparagraph'>
-                                <p id={item.key} className='newmessages'> New messages</p>
-                            </div>:null}
+                            {classname === 'viewWrapItemNotificaion' ?
+                                <div classname='notificationparagraph'>
+                                    <p id={item.key} className='newmessages'> New messages</p>
+                                </div> : null}
                         </button>
                     )
                 }
             }))
             setDisplayedContacts([...viewListUser])
         }
-        else{
+        else {
             console.log('no user is present')
         }
     }
 
-   /**
-    * this function resposible to return the className that fit to the specific itemId
-    * of the list dependign if this specific user sent messages to the current user.
-    */
+    /**
+     * this function resposible to return the className that fit to the specific itemId
+     * of the list dependign if this specific user sent messages to the current user.
+     */
     function getClassnameforUserandNotification(itemId) {
         let number = 0
         let className = ''
@@ -180,7 +181,7 @@ export default function Chat() {
                         number = item.number;
                     }
                 }
-            })   
+            })
             if (check === true) {
                 className = 'viewWrapItemFocused'
             }
@@ -191,18 +192,18 @@ export default function Chat() {
         return className
     }
 
-/**
- * this function will called after we click one of the users in the left list,
- * and the porpuse of this function is to vanish the notificatoins from this user
- * (if exists).
- * itemId is the id of the user that we clicked on in the left list (the id that we 
- * no longer want it to show in the messages array because we want to erase this notification)
- * the el.notificationIid is the id of each of the idi's in the messages array. 
- */
-    function notificationErase (itemId) {
+    /**
+     * this function will called after we click one of the users in the left list,
+     * and the porpuse of this function is to vanish the notificatoins from this user
+     * (if exists).
+     * itemId is the id of the user that we clicked on in the left list (the id that we 
+     * no longer want it to show in the messages array because we want to erase this notification)
+     * the el.notificationIid is the id of each of the idi's in the messages array. 
+     */
+    function notificationErase(itemId) {
         currnetUserMessages.forEach((el) => {
-            if (el.notificationIid.length > 0){
-                if (el.notificationIid != itemId){
+            if (el.notificationIid.length > 0) {
+                if (el.notificationIid != itemId) {
                     //the notificationMessagesErase is an array that hold the 
                     //updated messages object that should switch in the DB at the
                     //updateRenderList function.
@@ -212,16 +213,16 @@ export default function Chat() {
                     setNotificationMessagesErase([...notificationMessagesErase, {
                         notificationIid: el.notificationIid,
                         number: el.number
-                    }]) 
+                    }])
                 }
             }
         })
         updateRenderList()
     }
 
-    function updateRenderList () {
+    function updateRenderList() {
         firebase.firestore().collection('users').doc(currnetUserDocumentId).update(
-            {messages: notificationMessagesErase}
+            { messages: notificationMessagesErase }
         )
         setDisplayedContactSwitchedNotification(notificationMessagesErase)
 
@@ -236,12 +237,12 @@ export default function Chat() {
                         <img
                             className='ProfilePicture'
                             alt=''
-                            src={require('../../images/dog.jpg')} 
+                            src={currnetUserPhoto}
                             onClick={onProfileClick}
                         />
                         <button className='Logout' onClick={handleLogout} > Logout </button>
                     </div>
-                        {displayedContacts}
+                    {displayedContacts}
                 </div>
 
             </div>
@@ -283,7 +284,12 @@ const useStyles = makeStyles((theme) => ({
 
 /* questions:
 1. should i use local variables or all the variables should be states?
-2. in the getListUser i get all the users data inti the search local array 
-    and then when i want to copy this array to the state searchUsers, is not 
+2. in the getListUser i get all the users data inti the search local array
+    and then when i want to copy this array to the state searchUsers, is not
     coppied and the searchUsers state stays empty
 */
+
+
+
+
+

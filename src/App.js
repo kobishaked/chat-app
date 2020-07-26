@@ -66,6 +66,10 @@ function App() {
             exact
             path="/chat"
             component={Chat} />
+             <Route
+            exact
+            path="/profile"
+            component={Profile} />
 
         </Switch>
       </Router>

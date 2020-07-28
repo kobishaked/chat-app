@@ -4,12 +4,13 @@ import { useHistory } from "react-router-dom";
 import firebase from '../../services/firebase'
 import { makeStyles } from '@material-ui/core/styles';
 import './Chat.css';
+import ChatBox from '../chatBox/ChatBox'
 
 export default function Chat() {
     const history = useHistory();
     const classes = useStyles();
     //consider adding the localstorage function to get all the user data, movie 7, 5:00
-    // const [currnetUserName, setCurrnetUserName] = useState(localStorage.getItem(LoginStrings.Name))
+    const [currnetUserName, setCurrnetUserName] = useState(localStorage.getItem(LoginStrings.Name))
     const [currnetUserId, setCurrnetUserId] = useState(localStorage.getItem(LoginStrings.ID))
     const [currnetUserPhoto, setCurrnetUserPhoto] = useState(localStorage.getItem(LoginStrings.PhotoURL))
     const [currnetUserDocumentId, setCurrnetUserDocumentId] = useState(localStorage.getItem(LoginStrings.FirebaseDocumentId))
@@ -131,14 +132,11 @@ export default function Chat() {
                                 src={item.URL}
                                 //{item.URL}
                                 alt=''
-                                onClick={onProfileClick}
 
                             />
                             <div className='viewWrapContentItem'>
                                 <span className='textItem'>
-                                    {`Name: ${item.name}`}
-
-
+                                    {`${item.name}`}
                                 </span>
                                 {/* 
                                    next lines will displayed only if the current user get 
@@ -244,7 +242,13 @@ export default function Chat() {
                     </div>
                     {displayedContacts}
                 </div>
+                <div className="viewBoard">
+                    {currentPeerUser && (
+                        <ChatBox currentPeerUser={currentPeerUser}/>
 
+    )}
+
+                </div>
             </div>
 
         </div>
@@ -283,10 +287,12 @@ const useStyles = makeStyles((theme) => ({
 
 
 /* questions:
-1. should i use local variables or all the variables should be states?
-2. in the getListUser i get all the users data inti the search local array
+1.  should i use local variables or all the variables should be states?
+2.  in the getListUser i get all the users data inti the search local array
     and then when i want to copy this array to the state searchUsers, is not
     coppied and the searchUsers state stays empty
+3.  understanding what the way to make regular variable instead of state in react hooks
+    and when to use it over states
 */
 
 

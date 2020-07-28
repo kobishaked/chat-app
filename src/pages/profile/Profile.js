@@ -25,6 +25,7 @@ export default function Profile() {
     const [aboutMe, setAboutMe] = useState(localStorage.getItem(LoginStrings.Description))
     const [photoURL, setPhotoUrl] = useState(localStorage.getItem(LoginStrings.PhotoURL))
     const [newPhoto, setNewPhoto] = useState(null)
+    const [targetId, setTargetId] = useState(localStorage.getItem(LoginStrings.targetId))
 
     function onChangeAvatar(e) {
         if (e.target.files && e.target.files[0]) {
@@ -98,6 +99,7 @@ export default function Profile() {
 
 
     return (
+        
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>

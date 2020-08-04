@@ -26,15 +26,23 @@ export default function ChatBox(props) {
     // const [listMessage, setListMessage] = useState([])
 
     const listMessage = useRef([])
-    const groupChatId = useRef()
-    const removeListener = useRef()
+    const groupChatId = useRef("")
+    const removeListener = useRef(null)
     const refInput = useRef(null)
-    
+    const messagesEnd = useRef(null)
 
-    // useEffect(() => {
-    //     scrollToBottom();
-    // }
-    // );
+
+    useEffect(() => {
+        scrollToBottom();
+    });
+
+    useEffect(() => {
+        return () => {
+            // if (removeListener.current){
+            //     removeListener.current()
+            // }
+        }
+    },[]);
 
     useEffect(() => {
         setCurrentPeerUser(props.currentPeerUser)
@@ -51,29 +59,49 @@ export default function ChatBox(props) {
 
 
     function getListHistory() {
+        // if (removeListener.current){
+        //     removeListener.current()
+        // }
         setIsLoading(true)
-        if (hashString(currnetUserId) <= hashString(currentPeerUser.id)) {
-            groupChatId.current = `${groupChatId.current} - ${currentPeerUser.id}`
-        }
-        else {
-            groupChatId.current = `${currentPeerUser.id} - ${groupChatId.current}`
-        }
+        groupChatId.current = `${currnetUserId} - ${currentPeerUser.id}`
+        // if (hashString(currnetUserId) <= hashString(currentPeerUser.id)) {
+        //     groupChatId.current = `${groupChatId.current} - ${currentPeerUser.id}`
+        // }
+        // else {
+        //     groupChatId.current = `${currentPeerUser.id} - ${groupChatId.current}`
+        // }
         //get history and listen to new data added
         removeListener.current = firebase.firestore().collection('Messages').doc(groupChatId.current)
-        .collection(groupChatId.current).onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === LoginStrings.DOC){
-                    listMessage.current.push(change.doc.data())
+            .collection(groupChatId.current).onSnapshot(snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === LoginStrings.DOC) {
+                        listMessage.current.push(change.doc.data())
+                    }
+                })
+                setIsLoading(false)
+            },
+                err => {
+                    console.log(err)
                 }
-            })
-            setIsLoading(false)
-        },
-        err => {
-            console.log(err)
-        }
-        )
+            )
 
     }
+
+
+    // function onChangePicture(e) {
+    //     if (e.target.files && e.target.files[0]) {
+    //         const prefixFiletype = e.target.files[0].type.toString()
+    //         if (prefixFiletype.indexOf(LoginStrings.PREFIX_IMAGE) !== 0) {
+    //             console.log('this file is not an image')
+    //             return
+    //         }
+    //         setNewPhoto(e.target.files[0])
+    //         setPhotoUrl(URL.createObjectURL(e.target.files[0]))
+    //     }
+    //     else {
+    //         console.log('something wrong with input file')
+    //     }
+    // }
 
 
 
@@ -96,11 +124,11 @@ export default function ChatBox(props) {
         }
     }
 
-    // function scrollToBottom() {
-    //     if (messagesEnd) {
-    //         messagesEnd.scrollIntoView({})
-    //     }
-    // }
+    function scrollToBottom() {
+        if (messagesEnd.current) {
+            messagesEnd.current.scrollIntoView({})
+        }
+    }
 
     function onSendMessage(content, type) {
         let notificationMessages = []
@@ -111,7 +139,7 @@ export default function ChatBox(props) {
         const timestamp = moment().valueOf().toString()
         const itemMessage = {
             idFrom: currnetUserId,
-            idTo: currentPeerUser,
+            idTo: currentPeerUser.id,
             timestamp: timestamp,
             content: content.trim(),
             type: type
@@ -155,6 +183,115 @@ export default function ChatBox(props) {
     }
 
 
+    function renderListMessage() {
+        if (listMessage.length > 0) {
+            let viewListMessage = []
+            listMessage.forEach((item, index) => {
+                if (item.idFrom === currnetUserId) {
+                    if (item.type === 0) {
+                        viewListMessage.push(
+                            <div className='viewItemRight' key={item.timestamp}>
+                                <span className='textContentItem'>{item.content}</span>
+                            </div>
+                        )
+                    }
+                    else {
+                        viewListMessage.push(
+                            <div className='viewItemRight2' key={item.timestamp}>
+                                <img
+                                    className='imgItemRight'
+                                    src={item.content}
+                                    alt=''
+                                />
+                            </div>
+                        )
+                    }
+                }
+                else {
+                    if (item.type === 0) {
+                        viewListMessage.push(
+                            <div className='viewWrapItemLeft' key={item.timestamp}>
+                                <div className='viewWrapItemLeft3'>
+                                    {isLastMessageLeft(index) ? (
+                                        <img
+                                            src={currentPeerUser.URL}
+                                            alt='avatar'
+                                            className='perrAvatarLeft'
+                                        />
+                                    ) : (
+                                            <div className='viewPaddingLeft' />
+                                        )}
+                                    <div className='viewItemLeft'>
+                                        <span className='textContentItem'>{item.content}</span>
+                                    </div>
+                                </div>
+                                {isLastMessageLeft(index) ? (
+                                    <span className='textTimeLeft'>
+                                        <div className='time'>
+                                            {moment(Number(item.timestamp)).formate('11')}
+                                        </div>
+                                    </span>
+                                ) : null}
+                            </div>
+                        )
+                    } else {
+                        viewListMessage.push(
+                            <div className='viewWrapItemLeft2' key={item.timestamp}>
+                                <div className='viewWrapItemLeft3'>
+                                    {isLastMessageLeft(index) ? (
+                                        <img
+                                            src={currentPeerUser.URL}
+                                            alt='avatar'
+                                            className='perrAvatarLeft'
+                                        />
+                                    ) : (
+                                            <div className='viewPaddingLeft' />
+                                        )}
+                                    <div className='viewItemLeft'>
+                                        <img
+                                            src={item.content}
+                                            alt='content message'
+                                            className='imgItemLeft'
+                                        />
+                                    </div>
+                                </div>
+                                {isLastMessageLeft(index) ? (
+                                    <span className='textTimeLeft'>
+                                        <div className='time'>
+                                            {moment(Number(item.timestamp)).formate('11')}
+                                        </div>
+                                    </span>
+                                ) : null}
+                            </div>
+                        )
+                    } 
+                }
+            })
+            return viewListMessage
+        }
+    }
+
+
+    function isLastMessageLeft(index) {
+        if ((index + 1 < listMessage.length && listMessage[index + 1].idFrom === currnetUserId) ||
+            index === listMessage.length - 1) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
+    function isLastMessageRight(index) {
+        if ((index + 1 < listMessage.length && listMessage[index + 1].idFrom !== currnetUserId) ||
+            index === listMessage.length - 1) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
 
     return (
         <>
@@ -176,10 +313,11 @@ export default function ChatBox(props) {
                 </div>
 
                 <div className="viewListContentChat">
-                    {}
+                    {renderListMessage()}
                     <div
-                        style={{ float: 'left', clear: 'both' }}></div>
-                    {/* ref={el => { */}
+                        style={{ float: 'left', clear: 'both' }}
+                        ref={messagesEnd}
+                    ></div>
                 </div>
 
 
@@ -226,7 +364,7 @@ export default function ChatBox(props) {
                 accept='image/*'
                 className='viewInputFile'
                 type='file'
-                // onChange={onChangeAvatar}
+            // onChange={onChangePicture}
             />
 
         </>

@@ -23,10 +23,11 @@ export default function ChatBox(props) {
     const [currentPeerUserMessages, setCurrentPeerUserMessages] = useState(null)
     // const [removeListener, setRemoveListener] = useState(null)
     const [currentPhotoFile, setCurrentPhotoFile] = useState(null)
-    // const [listMessage, setListMessage] = useState([])
+    const [listMessage, setListMessage] = useState([])
+    
 
     const currentPeerUser = useRef(props.currentPeerUser)
-    const listMessage = useRef([])
+    // const listMessage = useRef([])
     const groupChatId = useRef("")
     const removeListener = useRef(null)
     const refInput = useRef(null)
@@ -34,10 +35,12 @@ export default function ChatBox(props) {
 
 
     useEffect(() => {
+        // getListHistory()
         scrollToBottom();
     });
 
     useEffect(() => {
+        getListHistory()
         return () => {
             if (removeListener.current) {
                 removeListener.current()
@@ -48,7 +51,7 @@ export default function ChatBox(props) {
     useEffect(() => {
         // setCurrentPeerUser(props.currentPeerUser)
         currentPeerUser.current = props.currentPeerUser
-        listMessage.current = []
+        // listMessage.current = []
         getListHistory()
 
         //these purpose lines is to get the message object of the "peer user" that we
@@ -79,9 +82,11 @@ export default function ChatBox(props) {
             .collection(groupChatId.current).onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     if (change.type === LoginStrings.DOC) {
-                        listMessage.current.push(change.doc.data())
+                        listMessage.push(change.doc.data())
+                        setListMessage([...listMessage])
                     }
                 })
+                
                 setIsLoading(false)
             },
                 err => {
@@ -229,9 +234,9 @@ export default function ChatBox(props) {
 
 
     function renderListMessage() {
-        if (listMessage.current.length > 0) {
+        if (listMessage.length > 0) {
             let viewListMessage = []
-            listMessage.current.forEach((item, index) => {
+            listMessage.forEach((item, index) => {
                 //the message belong to the current user
                 if (item.idFrom === currnetUserId) {
                     //text message
@@ -324,8 +329,8 @@ export default function ChatBox(props) {
 
 
     function isLastMessageLeft(index) {
-        if ((index + 1 < listMessage.current.length && listMessage.current[index + 1].idFrom === currnetUserId) ||
-            index === listMessage.current.length - 1) {
+        if ((index + 1 < listMessage.length && listMessage[index + 1].idFrom === currnetUserId) ||
+            index === listMessage.length - 1) {
             return true
         }
         else {
@@ -334,8 +339,8 @@ export default function ChatBox(props) {
     }
 
     function isLastMessageRight(index) {
-        if ((index + 1 < listMessage.current.length && listMessage.current[index + 1].idFrom !== currnetUserId) ||
-            index === listMessage.current.length - 1) {
+        if ((index + 1 < listMessage.length && listMessage[index + 1].idFrom !== currnetUserId) ||
+            index === listMessage.length - 1) {
             return true
         }
         else {

@@ -51,7 +51,7 @@ export default function ChatBox(props) {
     useEffect(() => {
         // setCurrentPeerUser(props.currentPeerUser)
         currentPeerUser.current = props.currentPeerUser
-        // listMessage.current = []
+        setListMessage([])
         getListHistory()
 
         //these purpose lines is to get the message object of the "peer user" that we

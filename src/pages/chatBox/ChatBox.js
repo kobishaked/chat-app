@@ -39,15 +39,16 @@ export default function ChatBox(props) {
 
     useEffect(() => {
         return () => {
-            // if (removeListener.current){
-            //     removeListener.current()
-            // }
+            if (removeListener.current){
+                removeListener.current()
+            }
         }
     },[]);
 
     useEffect(() => {
         // setCurrentPeerUser(props.currentPeerUser)
         currentPeerUser.current = props.currentPeerUser
+        listMessage.current = []
         getListHistory()
 
         //these purpose lines is to get the message object of the "peer user" that we
@@ -61,9 +62,9 @@ export default function ChatBox(props) {
 
 
     function getListHistory() {
-        // if (removeListener.current){
-        //     removeListener.current()
-        // }
+        if (removeListener.current){
+            removeListener.current()
+        }
         setIsLoading(true)
         getChatId()
         // groupChatId.current = currnetUserId + currentPeerUser.id
@@ -200,9 +201,9 @@ export default function ChatBox(props) {
 
 
     function renderListMessage() {
-        if (listMessage.length > 0) {
+        if (listMessage.current.length > 0) {
             let viewListMessage = []
-            listMessage.forEach((item, index) => {
+            listMessage.current.forEach((item, index) => {
                 if (item.idFrom === currnetUserId) {
                     if (item.type === 0) {
                         viewListMessage.push(
@@ -244,7 +245,7 @@ export default function ChatBox(props) {
                                 {isLastMessageLeft(index) ? (
                                     <span className='textTimeLeft'>
                                         <div className='time'>
-                                            {moment(Number(item.timestamp)).formate('11')}
+                                            {moment(Number(item.timestamp)).format('11')}
                                         </div>
                                     </span>
                                 ) : null}
@@ -289,8 +290,8 @@ export default function ChatBox(props) {
 
 
     function isLastMessageLeft(index) {
-        if ((index + 1 < listMessage.length && listMessage[index + 1].idFrom === currnetUserId) ||
-            index === listMessage.length - 1) {
+        if ((index + 1 < listMessage.current.length && listMessage.current[index + 1].idFrom === currnetUserId) ||
+            index === listMessage.current.length - 1) {
             return true
         }
         else {
@@ -299,8 +300,8 @@ export default function ChatBox(props) {
     }
 
     function isLastMessageRight(index) {
-        if ((index + 1 < listMessage.length && listMessage[index + 1].idFrom !== currnetUserId) ||
-            index === listMessage.length - 1) {
+        if ((index + 1 < listMessage.current.length && listMessage.current[index + 1].idFrom !== currnetUserId) ||
+            index === listMessage.current.length - 1) {
             return true
         }
         else {

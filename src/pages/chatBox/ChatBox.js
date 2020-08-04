@@ -17,7 +17,7 @@ export default function ChatBox(props) {
     const [currnetUserId, setCurrnetUserId] = useState(localStorage.getItem(LoginStrings.ID))
     const [currnetUserPhoto, setCurrnetUserPhoto] = useState(localStorage.getItem(LoginStrings.PhotoURL))
     const [currnetUserDocumentId, setCurrnetUserDocumentId] = useState(localStorage.getItem(LoginStrings.FirebaseDocumentId))
-    const [currentPeerUser, setCurrentPeerUser] = useState(props.currentPeerUser)
+    // const [currentPeerUser, setCurrentPeerUser] = useState(props.currentPeerUser)
     const [inputValue, setInputValue] = useState(null)
     // const [groupChatId, setGroupChatId] = useState(null)
     const [currentPeerUserMessages, setCurrentPeerUserMessages] = useState(null)
@@ -25,6 +25,7 @@ export default function ChatBox(props) {
     const [currentPhotoFile, setCurrentPhotoFile] = useState(null)
     // const [listMessage, setListMessage] = useState([])
 
+    const currentPeerUser = useRef(props.currentPeerUser)
     const listMessage = useRef([])
     const groupChatId = useRef("")
     const removeListener = useRef(null)
@@ -45,12 +46,13 @@ export default function ChatBox(props) {
     },[]);
 
     useEffect(() => {
-        setCurrentPeerUser(props.currentPeerUser)
+        // setCurrentPeerUser(props.currentPeerUser)
+        currentPeerUser.current = props.currentPeerUser
         getListHistory()
 
         //these purpose lines is to get the message object of the "peer user" that we
         //want to chat with (who we click on) 
-        firebase.firestore().collection('users').doc(currentPeerUser.documentKey).get()
+        firebase.firestore().collection('users').doc(currentPeerUser.current.documentKey).get()
             .then((docRef) => {
                 setCurrentPeerUserMessages(docRef.data().messages)
             })
@@ -63,7 +65,8 @@ export default function ChatBox(props) {
         //     removeListener.current()
         // }
         setIsLoading(true)
-        groupChatId.current = `${currnetUserId} - ${currentPeerUser.id}`
+        getChatId()
+        // groupChatId.current = currnetUserId + currentPeerUser.id
         // if (hashString(currnetUserId) <= hashString(currentPeerUser.id)) {
         //     groupChatId.current = `${groupChatId.current} - ${currentPeerUser.id}`
         // }
@@ -85,6 +88,19 @@ export default function ChatBox(props) {
                 }
             )
 
+    }
+
+    function getChatId(){
+        for (let i=0; i < currnetUserId.length; i++){
+            if (currnetUserId[i] > currentPeerUser.current.id[i]){
+                groupChatId.current = currnetUserId + currentPeerUser.current.id
+                break;
+            }
+            else if (currnetUserId[i] < currentPeerUser.current.id[i]){
+                groupChatId.current = currentPeerUser.current.id + currnetUserId
+                break;
+            }
+        }
     }
 
 
@@ -139,7 +155,7 @@ export default function ChatBox(props) {
         const timestamp = moment().valueOf().toString()
         const itemMessage = {
             idFrom: currnetUserId,
-            idTo: currentPeerUser.id,
+            idTo: currentPeerUser.current.id,
             timestamp: timestamp,
             content: content.trim(),
             type: type
@@ -162,7 +178,7 @@ export default function ChatBox(props) {
             }
         })
         // console.log(currentPeerUser.documentKey)
-        firebase.firestore().collection('users').doc(currentPeerUser.documentKey)
+        firebase.firestore().collection('users').doc(currentPeerUser.current.documentKey)
             .update({
                 messages: notificationMessages,
             })
@@ -240,7 +256,7 @@ export default function ChatBox(props) {
                                 <div className='viewWrapItemLeft3'>
                                     {isLastMessageLeft(index) ? (
                                         <img
-                                            src={currentPeerUser.URL}
+                                            src={currentPeerUser.current.URL}
                                             alt='avatar'
                                             className='perrAvatarLeft'
                                         />
@@ -299,15 +315,15 @@ export default function ChatBox(props) {
                 <div className='headerChatBoard'>
                     <img
                         className='viewAvatarItem'
-                        src={currentPeerUser.URL}
+                        src={currentPeerUser.current.URL}
                         alt=''
                     />
                     <span className='textHeaderChatBoard'>
-                        <p style={{ fontSize: '20px' }}>{currentPeerUser.name}</p>
+                        <p style={{ fontSize: '20px' }}>{currentPeerUser.current.name}</p>
                     </span>
                     <div className='aboutme'>
                         <span>
-                            <p>{currentPeerUser.description}</p>
+                            <p>{currentPeerUser.current.description}</p>
                         </span>
                     </div>
                 </div>

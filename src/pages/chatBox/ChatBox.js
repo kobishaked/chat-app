@@ -39,11 +39,11 @@ export default function ChatBox(props) {
 
     useEffect(() => {
         return () => {
-            if (removeListener.current){
+            if (removeListener.current) {
                 removeListener.current()
             }
         }
-    },[]);
+    }, []);
 
     useEffect(() => {
         // setCurrentPeerUser(props.currentPeerUser)
@@ -62,7 +62,7 @@ export default function ChatBox(props) {
 
 
     function getListHistory() {
-        if (removeListener.current){
+        if (removeListener.current) {
             removeListener.current()
         }
         setIsLoading(true)
@@ -91,13 +91,13 @@ export default function ChatBox(props) {
 
     }
 
-    function getChatId(){
-        for (let i=0; i < currnetUserId.length; i++){
-            if (currnetUserId[i] > currentPeerUser.current.id[i]){
+    function getChatId() {
+        for (let i = 0; i < currnetUserId.length; i++) {
+            if (currnetUserId[i] > currentPeerUser.current.id[i]) {
                 groupChatId.current = currnetUserId + currentPeerUser.current.id
                 break;
             }
-            else if (currnetUserId[i] < currentPeerUser.current.id[i]){
+            else if (currnetUserId[i] < currentPeerUser.current.id[i]) {
                 groupChatId.current = currentPeerUser.current.id + currnetUserId
                 break;
             }
@@ -105,20 +105,46 @@ export default function ChatBox(props) {
     }
 
 
-    // function onChangePicture(e) {
-    //     if (e.target.files && e.target.files[0]) {
-    //         const prefixFiletype = e.target.files[0].type.toString()
-    //         if (prefixFiletype.indexOf(LoginStrings.PREFIX_IMAGE) !== 0) {
-    //             console.log('this file is not an image')
-    //             return
-    //         }
-    //         setNewPhoto(e.target.files[0])
-    //         setPhotoUrl(URL.createObjectURL(e.target.files[0]))
-    //     }
-    //     else {
-    //         console.log('something wrong with input file')
-    //     }
-    // }
+    function onChangePicture(e) {
+        if (e.target.files && e.target.files[0]) {
+            const prefixFiletype = e.target.files[0].type.toString()
+            if (prefixFiletype.indexOf(LoginStrings.PREFIX_IMAGE) !== 0) {
+                console.log('this file is not an image')
+                return
+            }
+            updateProfile(e.target.files[0])
+            // setNewPhoto(e.target.files[0])
+            // setPhotoUrl(URL.createObjectURL(e.target.files[0]))
+            setIsLoading(true)
+            const timestamp = moment().valueOf().toString()
+            const uploadTask = firebase.storage().ref(timestamp).put(e.target.files[0]);
+            uploadTask.on(
+                "state_changed",
+                snapshot => { },
+                err => {
+                    console.log(err)
+                },
+                () => {
+                    firebase.storage().ref(timestamp).getDownloadURL().then(url => {
+                        onSendMessage(url, 1)
+                        // console.log(url)
+                        // updateUserInfo(true, url)
+                    })
+                }
+            )
+
+        }
+        else {
+            console.log('something wrong with input file')
+        }
+    }
+
+
+    function updateProfile(picture) {
+       
+    }
+
+
 
 
 
@@ -150,15 +176,17 @@ export default function ChatBox(props) {
     function onSendMessage(content, type) {
         let notificationMessages = []
         //checking if the content is empty, if so, dont do nothing
-        if (content.trim() === '') {
-            return
+        if (type === 0) {
+            if (content.trim() === '') {
+                return
+            }
         }
         const timestamp = moment().valueOf().toString()
         const itemMessage = {
             idFrom: currnetUserId,
             idTo: currentPeerUser.current.id,
             timestamp: timestamp,
-            content: content.trim(),
+            content: content,
             type: type
         }
         //store the message object (itemMessage) in a new collection called Messages
@@ -204,7 +232,9 @@ export default function ChatBox(props) {
         if (listMessage.current.length > 0) {
             let viewListMessage = []
             listMessage.current.forEach((item, index) => {
+                //the message belong to the current user
                 if (item.idFrom === currnetUserId) {
+                    //text message
                     if (item.type === 0) {
                         viewListMessage.push(
                             <div className='viewItemRight' key={item.timestamp}>
@@ -212,6 +242,7 @@ export default function ChatBox(props) {
                             </div>
                         )
                     }
+                    //picture message
                     else {
                         viewListMessage.push(
                             <div className='viewItemRight2' key={item.timestamp}>
@@ -224,16 +255,18 @@ export default function ChatBox(props) {
                         )
                     }
                 }
+                //the message belong to the peer user
                 else {
+                    //text message
                     if (item.type === 0) {
                         viewListMessage.push(
                             <div className='viewWrapItemLeft' key={item.timestamp}>
                                 <div className='viewWrapItemLeft3'>
                                     {isLastMessageLeft(index) ? (
                                         <img
-                                            src={currentPeerUser.URL}
+                                            src={currentPeerUser.current.URL}
                                             alt='avatar'
-                                            className='perrAvatarLeft'
+                                            className='peerAvatarLeft'
                                         />
                                     ) : (
                                             <div className='viewPaddingLeft' />
@@ -245,12 +278,13 @@ export default function ChatBox(props) {
                                 {isLastMessageLeft(index) ? (
                                     <span className='textTimeLeft'>
                                         <div className='time'>
-                                            {moment(Number(item.timestamp)).format('11')}
+                                            {moment(Number(item.timestamp)).format('ll')}
                                         </div>
                                     </span>
                                 ) : null}
                             </div>
                         )
+                        //picture message
                     } else {
                         viewListMessage.push(
                             <div className='viewWrapItemLeft2' key={item.timestamp}>
@@ -259,7 +293,7 @@ export default function ChatBox(props) {
                                         <img
                                             src={currentPeerUser.current.URL}
                                             alt='avatar'
-                                            className='perrAvatarLeft'
+                                            className='peerAvatarLeft'
                                         />
                                     ) : (
                                             <div className='viewPaddingLeft' />
@@ -275,13 +309,13 @@ export default function ChatBox(props) {
                                 {isLastMessageLeft(index) ? (
                                     <span className='textTimeLeft'>
                                         <div className='time'>
-                                            {moment(Number(item.timestamp)).formate('11')}
+                                            {moment(Number(item.timestamp)).format('ll')}
                                         </div>
                                     </span>
                                 ) : null}
                             </div>
                         )
-                    } 
+                    }
                 }
             })
             return viewListMessage
@@ -381,7 +415,7 @@ export default function ChatBox(props) {
                 accept='image/*'
                 className='viewInputFile'
                 type='file'
-            // onChange={onChangePicture}
+                onChange={onChangePicture}
             />
 
         </>

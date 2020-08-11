@@ -1,48 +1,4 @@
-.profileroot{
-    align-items: center;
-    display: flex;
-    min-height: 61rem;
-    flex-direction: column;
-    
-    background-size: 400% 400%;
 
-    animation: gradient 15s ease infinite;
-}
-@keyframes gradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-  }
-}
-.profileitems {
-    flex-direction: column;
-}
-
-.viewLoading {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.headerprofile {
-    font-weight: bold;
-    font-size: 20px;
-    color: #203152;
-    background-color: #1ebea5;
-    padding: 20px;
-    box-shadow: 0px 4px 4px #808888;
-}
 
 .avatar {
     width: 120px;
@@ -52,14 +8,6 @@
     margin-top: 50px;
     object-fit: cover;
     
-}
-
-.textLabel {
-    font-weight: bold;
-    color: #203152;
-    
-    font-size: 18px;
-    margin-top: 50px;
 }
 
 .textInput {
@@ -77,9 +25,7 @@
     margin-top: 10px;
 }
 
-input::placeholder {
-    color: rgb(199, 199, 199);
-}
+
 
 .viewWrapInputFile {
     position: absolute;
@@ -111,6 +57,3 @@ input::placeholder {
     padding: 5px;
 }
 
-.totalprofile{
-    border-radius: 1px solid black;
-}

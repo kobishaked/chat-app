@@ -99,11 +99,9 @@ export default function Profile() {
 
 
     return (
-        
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
-
                 <img className='avatar' alt='' src={photoURL}></img>
                 <div className='viewWrapInputFile'>
                     <img

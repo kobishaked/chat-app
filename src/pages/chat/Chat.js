@@ -238,6 +238,7 @@ export default function Chat() {
                             src={currnetUserPhoto}
                             onClick={onProfileClick}
                         />
+                        <div className='name' onClick={onProfileClick}>{currnetUserName}</div>
                         <button className='Logout' onClick={handleLogout} > Logout </button>
                     </div>
                     {displayedContacts}
@@ -245,9 +246,7 @@ export default function Chat() {
                 <div className="viewBoard">
                     {currentPeerUser && (
                         <ChatBox currentPeerUser={currentPeerUser}/>
-
     )}
-
                 </div>
             </div>
 

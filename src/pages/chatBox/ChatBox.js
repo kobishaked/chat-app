@@ -117,7 +117,7 @@ export default function ChatBox(props) {
                 console.log('this file is not an image')
                 return
             }
-            updateProfile(e.target.files[0])
+            // updateProfile(e.target.files[0])
             // setNewPhoto(e.target.files[0])
             // setPhotoUrl(URL.createObjectURL(e.target.files[0]))
             setIsLoading(true)
@@ -145,9 +145,9 @@ export default function ChatBox(props) {
     }
 
 
-    function updateProfile(picture) {
+    // function updateProfile(picture) {
        
-    }
+    // }
 
 
 
@@ -157,9 +157,7 @@ export default function ChatBox(props) {
         setInputValue(e.target.value)
     }
 
-    function onChoosePhoto() {
-
-    }
+ 
 
     function messageContentChange(e) {
         setInputValue(e.target.value)
@@ -384,12 +382,7 @@ export default function ChatBox(props) {
                         alt='input-file'
                         onClick={() => { refInput.current.click() }}
                     />
-                    <img
-                        className='viewInputGallery'
-                        accept='images/*'
-                        type='file'
-                        onChange={onChoosePhoto}
-                    />
+            
                     <input
                         className='viewInput'
                         placeholder='type a message...'

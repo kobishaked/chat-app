@@ -36,7 +36,14 @@ export default function Chat() {
      * and insert to CurrnetUserMessages the values. 
      * after that call the getListUser to get all the data users from the DB.
      */
-    useEffect(async () => {
+    useEffect(() => {
+        fetchData()
+        // setDisplayedContactSwitchedNotification([...currnetUserMessages])
+        getListUser()
+    }, [])
+
+
+    async function fetchData() {
         const doc = await firebase.firestore().collection('users').doc(
             currnetUserDocumentId).get()
         doc.data().messages.map((item) => {
@@ -44,10 +51,9 @@ export default function Chat() {
                 notificationIid: item.notificationIid,
                 number: item.number
             }])
-        })
-        // setDisplayedContactSwitchedNotification([...currnetUserMessages])
-        getListUser()
-    }, [])
+        }
+        )
+    }
 
     function handleLogout() {
         firebase.auth().signOut()
@@ -58,6 +64,7 @@ export default function Chat() {
     function onProfileClick() {
         history.push('/profile');
     }
+
 
     /**
      * this functions send request to firebase to get all the users from the DB. 
@@ -245,8 +252,8 @@ export default function Chat() {
                 </div>
                 <div className="viewBoard">
                     {currentPeerUser && (
-                        <ChatBox currentPeerUser={currentPeerUser}/>
-    )}
+                        <ChatBox currentPeerUser={currentPeerUser} />
+                    )}
                 </div>
             </div>
 

@@ -35,12 +35,10 @@ export default function ChatBox(props) {
 
 
     useEffect(() => {
-        // getListHistory()
         scrollToBottom();
     });
 
     useEffect(() => {
-        getListHistory()
         return () => {
             if (removeListener.current) {
                 removeListener.current()
@@ -49,9 +47,10 @@ export default function ChatBox(props) {
     }, []);
 
     useEffect(() => {
+        listMessage.length = 0
         // setCurrentPeerUser(props.currentPeerUser)
         currentPeerUser.current = props.currentPeerUser
-        setListMessage([])
+        
         getListHistory()
 
         //these purpose lines is to get the message object of the "peer user" that we
@@ -65,6 +64,7 @@ export default function ChatBox(props) {
 
 
     function getListHistory() {
+        setListMessage([])
         if (removeListener.current) {
             removeListener.current()
         }
@@ -86,14 +86,12 @@ export default function ChatBox(props) {
                         setListMessage([...listMessage])
                     }
                 })
-                
                 setIsLoading(false)
             },
                 err => {
                     console.log(err)
                 }
             )
-
     }
 
     function getChatId() {

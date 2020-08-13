@@ -21,7 +21,7 @@
   
 }
 .viewAvatarItem{
-    margin-left: 20px;
+    margin-left: 0;
     /* background-image: url('../../images/nopic.jpg'); */
 }
 
@@ -36,8 +36,7 @@
 }
 .aboutme{
     padding-top: 20px;
-    margin-left: 80px;
-    
+    margin-left: 61px;
     align-items: center;
     display: flex;
     position: absolute;

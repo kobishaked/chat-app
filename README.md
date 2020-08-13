@@ -9,7 +9,8 @@ supporting in sending realtime text and images messages. made responsive design 
 #### link to the app: https://chat-app-60c6c.web.app
 
 upcoming chanages:
-1. add support for notifications 
-2. images popup 
-3. improving the loading after saving new profile details
-4. add success and failure alerts
+1. improve mobile responsiveness
+2. add support for notifications 
+3. images popup 
+4. improving the loading after saving new profile details
+5. add success and failure alerts

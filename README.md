@@ -2,7 +2,7 @@
 This app build with React in the frontend and firebase for users authentication, noSQL DB and storing files in the cloud.
 supporting in sending realtime text and images messages. made responsive design for mobile. deployed with firebase hosting.
 
-#### two users for checking the app without sign up new users:
+#### two users for checking the app without sign up new users(just open 2 seperate tabs):
 1. username: kobishaked1@gmail.com. password: 123456.
 2. username: oriel351@gmail.com. password: 123456. 
 

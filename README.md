@@ -3,8 +3,8 @@ This app build with React in the frontend and firebase for users authentication,
 supporting in sending realtime text and images messages. made responsive design for mobile. deployed with firebase hosting.
 
 #### two users for checking the app without sign up new users:
-1. username: ***. password: ***.
-2. username: ***. password: ***. 
+1. username: kobishaked1@gmail.com. password: 123456.
+2. username: oriel351@gmail.com. password: 123456. 
 
 #### link to the app: https://chat-app-60c6c.web.app
 
